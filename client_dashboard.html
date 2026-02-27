@@ -2607,6 +2607,8 @@
       .main {
         width: 100% !important;
         min-height: 100vh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
       }
 
       .page,
@@ -6331,26 +6333,139 @@
       }
     });
 
-    // Sidebar Toggle
+    // UNIVERSAL SIDEBAR TOGGLE (desktop collapse + mobile overlay)
     (function () {
+      const LS_KEY = 'sc-sb-state';
+      let prevBodyOverflow = '';
+      let prevBodyTouchAction = '';
+
+      function getToggleBtn() {
+        return document.getElementById('sb-toggle-btn');
+      }
+      function getSidebar() {
+        return document.querySelector('.sidebar');
+      }
+      function getBackdrop() {
+        return document.getElementById('sb-backdrop');
+      }
+      function isMobile() {
+        return window.innerWidth <= 900;
+      }
+      function lockMobileScroll() {
+        prevBodyOverflow = document.body.style.overflow;
+        prevBodyTouchAction = document.body.style.touchAction;
+        document.body.style.overflow = 'hidden';
+        document.body.style.touchAction = 'none';
+      }
+      function unlockMobileScroll() {
+        document.body.style.overflow = prevBodyOverflow || '';
+        document.body.style.touchAction = prevBodyTouchAction || '';
+      }
+      function openMobile() {
+        const sidebar = getSidebar();
+        const backdrop = getBackdrop();
+        const toggleBtn = getToggleBtn();
+        if (!sidebar || !backdrop) return;
+        sidebar.classList.add('mob-open');
+        backdrop.classList.add('open');
+        if (toggleBtn) toggleBtn.classList.add('is-open');
+        lockMobileScroll();
+      }
+      function closeMobile() {
+        const sidebar = getSidebar();
+        const backdrop = getBackdrop();
+        const toggleBtn = getToggleBtn();
+        if (sidebar) sidebar.classList.remove('mob-open');
+        if (backdrop) backdrop.classList.remove('open');
+        if (toggleBtn) toggleBtn.classList.remove('is-open');
+        unlockMobileScroll();
+      }
+      function collapseDesktop() {
+        document.body.classList.add('sb-collapsed');
+        localStorage.setItem(LS_KEY, 'collapsed');
+      }
+      function expandDesktop() {
+        document.body.classList.remove('sb-collapsed');
+        localStorage.setItem(LS_KEY, 'expanded');
+      }
       function toggleSidebar() {
-        if (window.innerWidth <= 900) {
-          document.querySelector('.sidebar').classList.toggle('mob-open');
-          document.getElementById('sb-backdrop')?.classList.toggle('open');
+        if (isMobile()) {
+          const sidebar = getSidebar();
+          if (!sidebar) return;
+          sidebar.classList.contains('mob-open') ? closeMobile() : openMobile();
         } else {
-          document.body.classList.toggle('sb-collapsed');
+          document.body.classList.contains('sb-collapsed') ? expandDesktop() : collapseDesktop();
         }
       }
-      window.injectToggle = function () {
+
+      const saved = localStorage.getItem(LS_KEY);
+      if (!isMobile() && saved === 'collapsed') {
+        document.body.classList.add('sb-collapsed');
+      }
+
+      function injectToggle() {
         const topbar = document.querySelector('.topbar');
         if (!topbar || document.getElementById('sb-toggle-btn')) return;
         const btn = document.createElement('button');
-        btn.id = 'sb-toggle-btn'; btn.className = 'sb-toggle';
+        btn.id = 'sb-toggle-btn';
+        btn.className = 'sb-toggle';
+        btn.setAttribute('aria-label', 'Toggle sidebar');
         btn.innerHTML = '<span class="sb-toggle-bar"></span><span class="sb-toggle-bar"></span><span class="sb-toggle-bar"></span>';
-        btn.onclick = toggleSidebar;
+        btn.addEventListener('click', toggleSidebar);
         topbar.insertBefore(btn, topbar.firstChild);
       }
-      document.addEventListener('DOMContentLoaded', injectToggle);
+      function injectBackdrop() {
+        if (document.getElementById('sb-backdrop')) return;
+        const backdrop = document.createElement('div');
+        backdrop.id = 'sb-backdrop';
+        backdrop.className = 'sb-backdrop';
+        backdrop.addEventListener('click', closeMobile);
+        document.body.appendChild(backdrop);
+      }
+      function wireNavItems() {
+        document.querySelectorAll('.ni, [onclick*="showPage"], [onclick*="showSection"], [onclick*="nav("]').forEach(el => {
+          el.addEventListener('click', () => {
+            if (isMobile()) closeMobile();
+          });
+        });
+      }
+      function wireOutsideClose() {
+        document.addEventListener('pointerdown', (event) => {
+          if (!isMobile()) return;
+          const sidebar = getSidebar();
+          if (!sidebar || !sidebar.classList.contains('mob-open')) return;
+          const target = event.target;
+          const toggleBtn = getToggleBtn();
+          if (sidebar.contains(target)) return;
+          if (toggleBtn && toggleBtn.contains(target)) return;
+          const backdrop = getBackdrop();
+          if (backdrop && backdrop.contains(target)) return;
+          closeMobile();
+        }, true);
+      }
+
+      window.addEventListener('resize', () => {
+        if (!isMobile()) closeMobile();
+      });
+      window.addEventListener('pageshow', () => {
+        if (!isMobile()) unlockMobileScroll();
+      });
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && isMobile()) closeMobile();
+      });
+
+      document.addEventListener('DOMContentLoaded', () => {
+        injectToggle();
+        injectBackdrop();
+        wireNavItems();
+        wireOutsideClose();
+      });
+      if (document.readyState !== 'loading') {
+        injectToggle();
+        injectBackdrop();
+        wireNavItems();
+        wireOutsideClose();
+      }
     })();
   </script>
   <script src="https://unpkg.com/aos@next/dist/aos.js"></script>

@@ -3430,6 +3430,8 @@
     =================================================== */
     (function () {
       const LS_KEY = 'sc-sb-state';
+      let prevBodyOverflow = '';
+      let prevBodyTouchAction = '';
 
       function getToggleBtn() {
         return document.getElementById('sb-toggle-btn');
@@ -3445,18 +3447,37 @@
         return window.innerWidth <= 900;
       }
 
-      function openMobile() {
-        getSidebar().classList.add('mob-open');
-        getBackdrop().classList.add('open');
-        getToggleBtn().classList.add('is-open');
+      function lockMobileScroll() {
+        prevBodyOverflow = document.body.style.overflow;
+        prevBodyTouchAction = document.body.style.touchAction;
         document.body.style.overflow = 'hidden';
+        document.body.style.touchAction = 'none';
+      }
+
+      function unlockMobileScroll() {
+        document.body.style.overflow = prevBodyOverflow || '';
+        document.body.style.touchAction = prevBodyTouchAction || '';
+      }
+
+      function openMobile() {
+        const sidebar = getSidebar();
+        const backdrop = getBackdrop();
+        const toggleBtn = getToggleBtn();
+        if (!sidebar || !backdrop) return;
+        sidebar.classList.add('mob-open');
+        backdrop.classList.add('open');
+        if (toggleBtn) toggleBtn.classList.add('is-open');
+        lockMobileScroll();
       }
 
       function closeMobile() {
-        getSidebar().classList.remove('mob-open');
-        getBackdrop().classList.remove('open');
-        getToggleBtn().classList.remove('is-open');
-        document.body.style.overflow = '';
+        const sidebar = getSidebar();
+        const backdrop = getBackdrop();
+        const toggleBtn = getToggleBtn();
+        if (sidebar) sidebar.classList.remove('mob-open');
+        if (backdrop) backdrop.classList.remove('open');
+        if (toggleBtn) toggleBtn.classList.remove('is-open');
+        unlockMobileScroll();
       }
 
       function collapseDesktop() {
@@ -3516,11 +3537,29 @@
         });
       }
 
+      function wireOutsideClose() {
+        document.addEventListener('pointerdown', (event) => {
+          if (!isMobile()) return;
+          const sidebar = getSidebar();
+          if (!sidebar || !sidebar.classList.contains('mob-open')) return;
+          const target = event.target;
+          const toggleBtn = getToggleBtn();
+          if (sidebar.contains(target)) return;
+          if (toggleBtn && toggleBtn.contains(target)) return;
+          const backdrop = getBackdrop();
+          if (backdrop && backdrop.contains(target)) return;
+          closeMobile();
+        }, true);
+      }
+
       // Reset on resize
       window.addEventListener('resize', () => {
         if (!isMobile()) {
           closeMobile(); // clean up mobile classes
         }
+      });
+      window.addEventListener('pageshow', () => {
+        if (!isMobile()) unlockMobileScroll();
       });
 
       // ESC to close
@@ -3533,12 +3572,14 @@
         injectToggle();
         injectBackdrop();
         wireNavItems();
+        wireOutsideClose();
       });
       // Also run now in case DOM is ready
       if (document.readyState !== 'loading') {
         injectToggle();
         injectBackdrop();
         wireNavItems();
+        wireOutsideClose();
       }
     })();
 
