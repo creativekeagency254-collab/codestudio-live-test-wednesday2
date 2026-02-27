@@ -292,6 +292,45 @@
       border-top-color: rgba(0, 0, 0, 0.08);
     }
 
+    html.light .side-time-filter {
+      background: #f6f6f6;
+      border-color: rgba(0, 0, 0, 0.1);
+    }
+
+    html.light .side-time-btn {
+      background: #ededed;
+      border-color: rgba(0, 0, 0, 0.12);
+      color: #555;
+    }
+
+    html.light .side-time-btn:hover {
+      border-color: rgba(0, 0, 0, 0.22);
+      color: #111;
+    }
+
+    html.light .side-time-btn.on {
+      background: rgba(22, 163, 74, 0.1);
+      border-color: rgba(22, 163, 74, 0.32);
+      color: #14532d;
+    }
+
+    html.light .side-day-item {
+      border-color: rgba(0, 0, 0, 0.1);
+      background: #f4f4f4;
+      color: #555;
+    }
+
+    html.light .side-day-item:hover {
+      border-color: rgba(0, 0, 0, 0.22);
+      color: #111;
+    }
+
+    html.light .side-day-item.on {
+      background: #e9f7ee;
+      border-color: rgba(22, 163, 74, 0.34);
+      color: #14532d;
+    }
+
     html.light .live-dot {
       background: var(--green);
       box-shadow: 0 0 6px rgba(22, 163, 74, .5);
@@ -770,6 +809,112 @@
       margin-top: auto;
       padding-top: 10px;
       border-top: 1px solid var(--bd0);
+    }
+
+    .side-time-filter {
+      margin-top: 8px;
+      border: 1px solid var(--bd0);
+      background: var(--b3);
+      border-radius: var(--r12);
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .side-time-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .side-time-btn {
+      border: 1px solid var(--bd1);
+      border-radius: var(--r8);
+      background: var(--b4);
+      color: var(--s4);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .02em;
+      padding: 6px 8px;
+      cursor: pointer;
+      transition: all .14s ease;
+    }
+
+    .side-time-btn:hover {
+      color: var(--s1);
+      border-color: var(--bd3);
+    }
+
+    .side-time-btn.on {
+      border-color: var(--gbdr);
+      background: var(--gbg);
+      color: var(--green);
+    }
+
+    .side-time-date {
+      display: grid;
+      gap: 5px;
+    }
+
+    .side-time-lbl {
+      font-size: 10px;
+      color: var(--s5);
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .side-time-meta {
+      font-size: 11px;
+      color: var(--s3);
+      border: 1px solid var(--bd0);
+      border-radius: var(--r8);
+      background: var(--b2);
+      padding: 7px 8px;
+      line-height: 1.35;
+    }
+
+    .side-time-list {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      max-height: 170px;
+      overflow-y: auto;
+      padding-right: 2px;
+    }
+
+    .side-day-item {
+      border: 1px solid var(--bd0);
+      border-radius: var(--r8);
+      background: var(--b2);
+      color: var(--s4);
+      font-size: 11px;
+      padding: 6px 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+      transition: all .14s ease;
+    }
+
+    .side-day-item:hover {
+      color: var(--s2);
+      border-color: var(--bd2);
+    }
+
+    .side-day-item.on {
+      color: var(--green);
+      border-color: var(--gbdr);
+      background: var(--gbg);
+    }
+
+    .side-day-item small {
+      color: var(--s5);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .04em;
     }
 
     .so-btn {
@@ -1939,6 +2084,10 @@
       display: none;
     }
 
+    body.sb-collapsed .sidebar .side-time-filter {
+      display: none;
+    }
+
     body.sb-collapsed .sidebar .sb-user {
       justify-content: center;
       padding: 8px 0;
@@ -2253,6 +2402,22 @@
         <path d="M18 22H8a2 2 0 0 1-2-2V6h12v14a2 2 0 0 1-2 2z" />
       </svg>
       Audit Logs
+    </div>
+
+    <div class="nav-sec">Timeline</div>
+    <div class="side-time-filter" id="side-time-filter">
+      <div class="side-time-grid">
+        <button class="side-time-btn on" data-preset="today" onclick="setGlobalTimePreset('today')">Today</button>
+        <button class="side-time-btn" data-preset="yesterday" onclick="setGlobalTimePreset('yesterday')">Yesterday</button>
+        <button class="side-time-btn" data-preset="last7" onclick="setGlobalTimePreset('last7')">Last 7d</button>
+        <button class="side-time-btn" data-preset="all" onclick="setGlobalTimePreset('all')">All Time</button>
+      </div>
+      <div class="side-time-date">
+        <div class="side-time-lbl">Select Day</div>
+        <input class="inp" type="date" id="sidebar-day-picker" onchange="applySidebarDayFilter(this.value)" style="width:100%;padding:7px 9px;font-size:12px;">
+      </div>
+      <div class="side-time-meta" id="sidebar-time-meta">Today activity (00:00-23:59)</div>
+      <div class="side-time-list" id="sidebar-time-list"></div>
     </div>
 
     <div class="sb-foot">
@@ -3327,6 +3492,8 @@
     let currentAdminName = 'Administrator';
     let currentAdminUserId = null;
     let currentAdminProfile = null;
+    let ADMIN_TIME_PRESET = 'today';
+    let adminMidnightRefreshTimer = null;
     const PLATFORM_SETTINGS_DEFAULTS = {
       fee_standard_pct: 2.5,
       fee_pro_pct: 1.5,
@@ -4239,6 +4406,148 @@
       const ts = Date.parse(String(v || ''));
       return Number.isFinite(ts) ? ts : 0;
     }
+    function isoDateLocal(value) {
+      const d = value instanceof Date ? new Date(value.getTime()) : new Date(value || Date.now());
+      if (!Number.isFinite(d.getTime())) return '';
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    }
+    function formatPrettyDay(iso) {
+      const ts = Date.parse(`${iso}T00:00:00`);
+      if (!Number.isFinite(ts)) return iso;
+      return new Date(ts).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+    }
+    function dayDeltaISO(deltaDays) {
+      const d = new Date();
+      d.setHours(0, 0, 0, 0);
+      d.setDate(d.getDate() + deltaDays);
+      return isoDateLocal(d);
+    }
+    function setGlobalDateInputs(fromRaw, toRaw) {
+      const from = document.getElementById('global-date-from');
+      const to = document.getElementById('global-date-to');
+      if (from) from.value = fromRaw || '';
+      if (to) to.value = toRaw || '';
+      const picker = document.getElementById('sidebar-day-picker');
+      if (picker) picker.value = fromRaw && toRaw && fromRaw === toRaw ? fromRaw : '';
+    }
+    function inferTimePresetFromRange(range) {
+      const today = dayDeltaISO(0);
+      const yesterday = dayDeltaISO(-1);
+      const last7From = dayDeltaISO(-6);
+      if (!range.fromRaw && !range.toRaw) return 'all';
+      if (range.fromRaw === today && range.toRaw === today) return 'today';
+      if (range.fromRaw === yesterday && range.toRaw === yesterday) return 'yesterday';
+      if (range.fromRaw === last7From && range.toRaw === today) return 'last7';
+      if (range.fromRaw && range.toRaw && range.fromRaw === range.toRaw) return 'day';
+      return 'custom';
+    }
+    function updateTimePresetButtons() {
+      document.querySelectorAll('.side-time-btn').forEach(btn => {
+        const preset = String(btn.dataset.preset || '').trim();
+        btn.classList.toggle('on', preset === ADMIN_TIME_PRESET);
+      });
+    }
+    function refreshSidebarTimeMeta(range = getGlobalTimeRange()) {
+      const meta = document.getElementById('sidebar-time-meta');
+      if (!meta) return;
+      const preset = inferTimePresetFromRange(range);
+      if (preset === 'all') {
+        meta.textContent = 'All-time activity view enabled.';
+        return;
+      }
+      if (preset === 'today') {
+        meta.textContent = `Today activity (00:00-23:59) • ${range.fromRaw}`;
+        return;
+      }
+      if (preset === 'yesterday') {
+        meta.textContent = `Yesterday replay • ${range.fromRaw}`;
+        return;
+      }
+      if (preset === 'last7') {
+        meta.textContent = `Last 7 days • ${range.fromRaw} to ${range.toRaw}`;
+        return;
+      }
+      if (preset === 'day') {
+        meta.textContent = `Daily replay • ${formatPrettyDay(range.fromRaw)}`;
+        return;
+      }
+      meta.textContent = `Custom range • ${range.fromRaw || 'start'} to ${range.toRaw || 'today'}`;
+    }
+    function buildDailyActivitySummary() {
+      const summary = new Map();
+      const accumulate = (list, key, tsReader) => {
+        (Array.isArray(list) ? list : []).forEach(item => {
+          const ts = parseTs(tsReader(item));
+          if (!ts) return;
+          const day = isoDateLocal(ts);
+          if (!day) return;
+          const bucket = summary.get(day) || { day, total: 0, users: 0, projects: 0, transactions: 0, disputes: 0, audit: 0, support: 0 };
+          bucket.total += 1;
+          bucket[key] += 1;
+          summary.set(day, bucket);
+        });
+      };
+      accumulate(USERS, 'users', item => item?.createdAtMs || item?.createdAt || item?.created_at || item?.joined);
+      accumulate(PROJECTS, 'projects', item => item?.createdAtMs || item?.createdAt || item?.created_at);
+      accumulate(TRANSACTIONS, 'transactions', item => item?.createdAtMs || item?.createdAt || item?.created_at || item?.date || item?.time);
+      accumulate(DISPUTES, 'disputes', item => item?.createdAtMs || item?.createdAt || item?.created_at || item?.raised);
+      accumulate(AUDIT_LOGS, 'audit', item => item?.createdAtMs || item?.createdAt || item?.created_at || item?.time);
+      accumulate(SUPPORT_INBOX, 'support', item => item?.createdAtMs || item?.createdAt || item?.created_at);
+      return summary;
+    }
+    function renderSidebarDailyActivity() {
+      const host = document.getElementById('sidebar-time-list');
+      if (!host) return;
+      const summary = buildDailyActivitySummary();
+      const activeRange = getGlobalTimeRange();
+      const activeDay = activeRange.fromRaw && activeRange.toRaw && activeRange.fromRaw === activeRange.toRaw
+        ? activeRange.fromRaw
+        : '';
+      const days = [];
+      for (let i = 0; i < 14; i += 1) {
+        days.push(dayDeltaISO(-i));
+      }
+      if (activeDay && !days.includes(activeDay)) days.unshift(activeDay);
+      const rows = days.map(day => {
+        const s = summary.get(day) || { day, total: 0, users: 0, projects: 0, transactions: 0, disputes: 0, audit: 0, support: 0 };
+        const tags = [];
+        if (s.projects) tags.push(`${s.projects} projects`);
+        if (s.transactions) tags.push(`${s.transactions} tx`);
+        if (s.disputes) tags.push(`${s.disputes} disputes`);
+        if (!tags.length) tags.push('no activity');
+        const dayLabel = day === dayDeltaISO(0)
+          ? 'Today'
+          : day === dayDeltaISO(-1)
+            ? 'Yesterday'
+            : formatPrettyDay(day);
+        return { ...s, dayLabel, tags: tags.join(' • '), active: day === activeDay };
+      });
+      host.innerHTML = rows.map(row => `
+        <button type="button" class="side-day-item ${row.active ? 'on' : ''}" onclick="applySidebarDayFilter('${row.day}')">
+          <span>${row.dayLabel}<br><small>${row.tags}</small></span>
+          <small>${row.total}</small>
+        </button>
+      `).join('');
+    }
+    function scheduleAdminMidnightReset() {
+      if (adminMidnightRefreshTimer) clearTimeout(adminMidnightRefreshTimer);
+      const now = new Date();
+      const next = new Date(now);
+      next.setHours(24, 0, 1, 0);
+      const delay = Math.max(1000, next.getTime() - now.getTime());
+      adminMidnightRefreshTimer = setTimeout(() => {
+        if (ADMIN_TIME_PRESET === 'today') {
+          setGlobalTimePreset('today');
+          toast('New day started. Dashboard timeline reset to today.');
+        } else {
+          renderSidebarDailyActivity();
+        }
+        scheduleAdminMidnightReset();
+      }, delay);
+    }
     function sortNewest(list) {
       return [...(Array.isArray(list) ? list : [])].sort((a, b) => {
         const aTs = parseTs(a?.createdAtMs || a?.createdAt || a?.created_at || a?.date || a?.time);
@@ -4279,23 +4588,73 @@
       const range = getGlobalTimeRange();
       if (!range.fromRaw && !range.toRaw) {
         label.textContent = 'Showing all time.';
+        refreshSidebarTimeMeta(range);
         return;
       }
       label.textContent = `Showing: ${range.fromRaw || 'start'} to ${range.toRaw || 'today'}`;
+      refreshSidebarTimeMeta(range);
     }
+    function syncPresetStateFromInputs() {
+      const range = getGlobalTimeRange();
+      ADMIN_TIME_PRESET = inferTimePresetFromRange(range);
+      const picker = document.getElementById('sidebar-day-picker');
+      if (picker) picker.value = range.fromRaw && range.toRaw && range.fromRaw === range.toRaw ? range.fromRaw : '';
+      updateTimePresetButtons();
+    }
+    function setGlobalTimePreset(preset, options = {}) {
+      const safePreset = String(preset || 'today').trim().toLowerCase();
+      const today = dayDeltaISO(0);
+      const yesterday = dayDeltaISO(-1);
+      const last7From = dayDeltaISO(-6);
+      let fromRaw = '';
+      let toRaw = '';
+      if (safePreset === 'today') {
+        fromRaw = today;
+        toRaw = today;
+      } else if (safePreset === 'yesterday') {
+        fromRaw = yesterday;
+        toRaw = yesterday;
+      } else if (safePreset === 'last7') {
+        fromRaw = last7From;
+        toRaw = today;
+      } else if (safePreset === 'day') {
+        const selectedDay = String(options.day || '').trim();
+        if (selectedDay) {
+          fromRaw = selectedDay;
+          toRaw = selectedDay;
+        } else {
+          fromRaw = today;
+          toRaw = today;
+        }
+      }
+      setGlobalDateInputs(fromRaw, toRaw);
+      ADMIN_TIME_PRESET = safePreset;
+      syncPresetStateFromInputs();
+      refreshGlobalTimeFilterLabel();
+      if (options.silent) {
+        renderSidebarDailyActivity();
+        return;
+      }
+      renderAll();
+      loadInvoices();
+    }
+    window.setGlobalTimePreset = setGlobalTimePreset;
+    window.applySidebarDayFilter = function (rawDay) {
+      const day = String(rawDay || '').trim();
+      if (!day) {
+        setGlobalTimePreset('today');
+        return;
+      }
+      setGlobalTimePreset('day', { day });
+    };
     window.applyGlobalTimeFilter = function () {
+      syncPresetStateFromInputs();
       refreshGlobalTimeFilterLabel();
       renderAll();
       loadInvoices();
     };
     window.clearGlobalTimeFilter = function () {
-      const from = document.getElementById('global-date-from');
-      const to = document.getElementById('global-date-to');
-      if (from) from.value = '';
-      if (to) to.value = '';
-      refreshGlobalTimeFilterLabel();
-      renderAll();
-      loadInvoices();
+      setGlobalTimePreset('all');
     };
 
     //  Render Dashboard 
@@ -5826,6 +6185,7 @@
       renderLedger();
       renderAudit();
       refreshGlobalTimeFilterLabel();
+      renderSidebarDailyActivity();
 
       // Update top-level dashboard counts if elements exist
       const usersScoped = applyGlobalDateFilter(USERS);
@@ -5849,7 +6209,9 @@
       renderTopDevelopers();
     }
 
-    // Initialize fetching
+    // Initialize fetching (default to today's 24-hour admin board)
+    setGlobalTimePreset('today', { silent: true });
+    scheduleAdminMidnightReset();
     loadAdminData();
 
 
